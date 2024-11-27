@@ -12,23 +12,28 @@ const AllPlayers = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const getPlayers = async () => {
-      const playersData = await fetchPlayers();
-      // console.log('Fetched players:', playersData);
-      setPlayers(playersData);
-      setFilteredPlayers(playersData);
-    };
-
-    getPlayers();
+    const savedPlayers = JSON.parse(localStorage.getItem('players')) || [];
+    console.log('Loaded players from localStorage:', savedPlayers);
+    if (savedPlayers.length > 0) {
+      setPlayers(savedPlayers);
+      setFilteredPlayers(savedPlayers);
+    } else {
+      const getPlayers = async () => {
+        const playersData = await fetchPlayers();
+        console.log('Fetched players from API:', playersData);
+        setPlayers(playersData);
+        setFilteredPlayers(playersData);
+        localStorage.setItem('players', JSON.stringify(playersData));
+      };
+      getPlayers();
+    }
   }, []);
 
-  useEffect(() => {
-    if (location.state?.newPlayer) {
-      const newPlayer = location.state.newPlayer;
-      setPlayers((prevPlayers) => [...prevPlayers, newPlayer]);
-      setFilteredPlayers((prevFiltered) => [...prevFiltered, newPlayer]);
-    }
-  }, [location.state]);
+  // useEffect(() => {
+  //   const savedPlayers = JSON.parse(localStorage.getItem('players')) || [];
+  //   setPlayers(savedPlayers);
+  //   setFilteredPlayers(savedPlayers);
+  // }, []);
 
   const handleSearchChange = (event) => {
     const text = event.target.value.toLowerCase();
@@ -48,54 +53,57 @@ const AllPlayers = () => {
       return;
     }
 
-    setPlayers((prevPlayers) =>
-      prevPlayers.filter((player) => player.id !== id)
-    );
-    setFilteredPlayers((prevFiltered) =>
-      prevFiltered.filter((player) => player.id !== id)
-    );
-
+    const updatedPlayers = players.filter((player) => player.id !== id);
+    setPlayers(updatedPlayers);
+    setFilteredPlayers(updatedPlayers);
+    localStorage.setItem('players', JSON.stringify(updatedPlayers)); // Persist deletion
     alert('Player deleted successfully.');
   };
 
   return (
     <>
-      <h1>All Puppy Players</h1>
+      <div className="container">
+        <h1>Welcome to the Puppy Bowl!</h1>
 
-      <input
-        type="text"
-        placeholder="Search players by name..."
-        value={searchText}
-        onChange={handleSearchChange}
-        style={{ marginBottom: '20px', padding: '10px', width: '300px' }}
-      />
+        <input
+          type="text"
+          placeholder="Search players by name..."
+          value={searchText}
+          onChange={handleSearchChange}
+          style={{ marginBottom: '20px', padding: '10px', width: '300px' }}
+        />
 
-      {Array.isArray(filteredPlayers) && filteredPlayers.length === 0 ? (
-        <p>No players found.</p>
-      ) : (
-        <div>
-          {filteredPlayers.map((player) => (
-            <div key={player.id} style={{ marginBottom: '15px' }}>
-              <h4>{player.name}</h4>
-              <p>Breed: {player.breed || 'Unknown'}</p>
-              <img
-                src={player.imageUrl}
-                alt={player.name}
-                style={{ width: '150px' }}
-              />
-              <button onClick={() => navigate(`/players/${player.id}`)}>
-                View Details
-              </button>
-              <button
-                onClick={() => handleDeletePlayer(player.id)}
-                disabled={!player.isNew}
-              >
-                Delete
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+        <h2>All Puppy Players</h2>
+
+        {Array.isArray(filteredPlayers) && filteredPlayers.length === 0 ? (
+          <p>No players found.</p>
+        ) : (
+          <div className="players-grid">
+            {filteredPlayers.map((player) => (
+              <div key={player.id} className="player-card">
+                <img
+                  src={player.imageUrl}
+                  alt={player.name}
+                  className="player-image"
+                />
+                <div className="player-details">
+                  <h4>{player.name}</h4>
+                  <p>Breed: {player.breed || 'Unknown'}</p>
+                  <button onClick={() => navigate(`/players/${player.id}`)}>
+                    View Details
+                  </button>
+                  <button
+                    onClick={() => handleDeletePlayer(player.id)}
+                    disabled={!player.isNew}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </>
   );
 };

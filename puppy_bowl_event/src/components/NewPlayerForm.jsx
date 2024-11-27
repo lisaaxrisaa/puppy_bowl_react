@@ -17,10 +17,13 @@ const NewPlayerForm = () => {
       alert('Name and position are required!');
       return;
     }
+
     const newPlayer = { id: Date.now(), name, position, isNew: true };
-    navigate('/', { state: { newPlayer } });
-    setName('');
-    setPosition('');
+    const savedPlayers = JSON.parse(localStorage.getItem('players')) || [];
+    const updatedPlayers = [newPlayer, ...savedPlayers];
+    console.log('Updated Players:', updatedPlayers);
+    localStorage.setItem('players', JSON.stringify(updatedPlayers)); // Save to localStorage
+    navigate('/'); // Navigate back to home
   };
 
   return (

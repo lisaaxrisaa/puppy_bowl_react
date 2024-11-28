@@ -6,13 +6,9 @@ const NewPlayerForm = () => {
   const [position, setPosition] = useState('');
   const navigate = useNavigate();
 
-  // const handleSubmit = (event) => {
-  //   event.preventDefault();
-  //   console.log(`New player added: ${name}, Position: ${position}`);
-  // };
-
   const handleSubmit = (event) => {
     event.preventDefault();
+
     if (!name.trim() || !position.trim()) {
       alert('Name and position are required!');
       return;
@@ -27,7 +23,7 @@ const NewPlayerForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="single-player">
       <label>
         Name:
         <input

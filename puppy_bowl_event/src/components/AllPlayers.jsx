@@ -12,22 +12,61 @@ const AllPlayers = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const savedPlayers = JSON.parse(localStorage.getItem('players')) || [];
-    console.log('Loaded players from localStorage:', savedPlayers);
-    if (savedPlayers.length > 0) {
-      setPlayers(savedPlayers);
-      setFilteredPlayers(savedPlayers);
-    } else {
-      const getPlayers = async () => {
-        const playersData = await fetchPlayers();
-        console.log('Fetched players from API:', playersData);
-        setPlayers(playersData);
-        setFilteredPlayers(playersData);
-        localStorage.setItem('players', JSON.stringify(playersData));
-      };
-      getPlayers();
-    }
+    const getPlayers = async () => {
+      // Retrieve players from localStorage
+      const savedPlayers = JSON.parse(localStorage.getItem('players')) || [];
+
+      // Fetch data from the API
+      const apiPlayers = await fetchPlayers();
+
+      // Merge API players with local players
+      const mergedPlayers = [
+        ...savedPlayers,
+        ...apiPlayers.filter(
+          (apiPlayer) =>
+            !savedPlayers.some((localPlayer) => localPlayer.id === apiPlayer.id)
+        ),
+      ];
+
+      // Update state and save merged data to localStorage
+      setPlayers(mergedPlayers);
+      setFilteredPlayers(mergedPlayers);
+      localStorage.setItem('players', JSON.stringify(mergedPlayers));
+    };
+
+    getPlayers();
   }, []);
+
+  // useEffect(() => {
+  //   const getPlayers = async () => {
+  //     const playersData = await fetchPlayers();
+  //     // console.log('Fetched players from API:', playersData);
+
+  //     setPlayers(playersData);
+  //     setFilteredPlayers(playersData);
+  //     localStorage.setItem('players', JSON.stringify(playersData));
+  //   };
+
+  //   getPlayers();
+  // }, []);
+
+  // useEffect(() => {
+  //   const savedPlayers = JSON.parse(localStorage.getItem('players')) || [];
+  //   console.log('Loaded players from localStorage:', savedPlayers);
+  //   if (savedPlayers.length > 0) {
+  //     setPlayers(savedPlayers);
+  //     setFilteredPlayers(savedPlayers);
+  //   } else {
+  //     const getPlayers = async () => {
+  //       const playersData = await fetchPlayers();
+  //       // console.log('Fetched players from API:', playersData);
+  //       setPlayers(playersData);
+  //       setFilteredPlayers(playersData);
+  //       localStorage.setItem('players', JSON.stringify(playersData));
+  //     };
+  //     getPlayers();
+  //   }
+  // }, []);
 
   // useEffect(() => {
   //   const savedPlayers = JSON.parse(localStorage.getItem('players')) || [];
@@ -56,7 +95,7 @@ const AllPlayers = () => {
     const updatedPlayers = players.filter((player) => player.id !== id);
     setPlayers(updatedPlayers);
     setFilteredPlayers(updatedPlayers);
-    localStorage.setItem('players', JSON.stringify(updatedPlayers)); // Persist deletion
+    localStorage.setItem('players', JSON.stringify(updatedPlayers));
     alert('Player deleted successfully.');
   };
 

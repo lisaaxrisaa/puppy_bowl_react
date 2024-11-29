@@ -35,7 +35,6 @@ const SinglePlayer = () => {
       <p>Status: {player.status}</p>
       <p>Team ID: {player.teamId || 'No team'}</p>
       <p>Cohort ID: {player.cohortId}</p>
-      {/* Add other details as needed */}
     </div>
   );
 };

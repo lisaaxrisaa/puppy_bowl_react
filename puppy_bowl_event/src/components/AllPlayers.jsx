@@ -128,15 +128,17 @@ const AllPlayers = () => {
                 <div className="player-details">
                   <h4>{player.name}</h4>
                   <p>Breed: {player.breed || 'Unknown'}</p>
-                  <button onClick={() => navigate(`/players/${player.id}`)}>
-                    View Details
-                  </button>
-                  <button
-                    onClick={() => handleDeletePlayer(player.id)}
-                    disabled={!player.isNew}
-                  >
-                    Delete
-                  </button>
+                  <div className="button">
+                    <button onClick={() => navigate(`/players/${player.id}`)}>
+                      View Details
+                    </button>
+                    <button
+                      onClick={() => handleDeletePlayer(player.id)}
+                      disabled={!player.isNew}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

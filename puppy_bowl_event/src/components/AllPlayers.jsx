@@ -2,24 +2,21 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchPlayers } from '../../index';
-import { useLocation } from 'react-router-dom';
+// import { useLocation } from 'react-router-dom';
 
 const AllPlayers = () => {
   const [players, setPlayers] = useState([]);
   const navigate = useNavigate();
   const [filteredPlayers, setFilteredPlayers] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const location = useLocation();
+  // const location = useLocation();
 
   useEffect(() => {
     const getPlayers = async () => {
-      // Retrieve players from localStorage
       const savedPlayers = JSON.parse(localStorage.getItem('players')) || [];
 
-      // Fetch data from the API
       const apiPlayers = await fetchPlayers();
 
-      // Merge API players with local players
       const mergedPlayers = [
         ...savedPlayers,
         ...apiPlayers.filter(
@@ -28,7 +25,6 @@ const AllPlayers = () => {
         ),
       ];
 
-      // Update state and save merged data to localStorage
       setPlayers(mergedPlayers);
       setFilteredPlayers(mergedPlayers);
       localStorage.setItem('players', JSON.stringify(mergedPlayers));

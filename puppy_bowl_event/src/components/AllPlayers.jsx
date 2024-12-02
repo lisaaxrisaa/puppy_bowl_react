@@ -2,6 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchPlayers } from '../../index';
+import axios from 'axios';
 // import { useLocation } from 'react-router-dom';
 
 const AllPlayers = () => {
@@ -33,43 +34,6 @@ const AllPlayers = () => {
     getPlayers();
   }, []);
 
-  // useEffect(() => {
-  //   const getPlayers = async () => {
-  //     const playersData = await fetchPlayers();
-  //     // console.log('Fetched players from API:', playersData);
-
-  //     setPlayers(playersData);
-  //     setFilteredPlayers(playersData);
-  //     localStorage.setItem('players', JSON.stringify(playersData));
-  //   };
-
-  //   getPlayers();
-  // }, []);
-
-  // useEffect(() => {
-  //   const savedPlayers = JSON.parse(localStorage.getItem('players')) || [];
-  //   console.log('Loaded players from localStorage:', savedPlayers);
-  //   if (savedPlayers.length > 0) {
-  //     setPlayers(savedPlayers);
-  //     setFilteredPlayers(savedPlayers);
-  //   } else {
-  //     const getPlayers = async () => {
-  //       const playersData = await fetchPlayers();
-  //       // console.log('Fetched players from API:', playersData);
-  //       setPlayers(playersData);
-  //       setFilteredPlayers(playersData);
-  //       localStorage.setItem('players', JSON.stringify(playersData));
-  //     };
-  //     getPlayers();
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   const savedPlayers = JSON.parse(localStorage.getItem('players')) || [];
-  //   setPlayers(savedPlayers);
-  //   setFilteredPlayers(savedPlayers);
-  // }, []);
-
   const handleSearchChange = (event) => {
     const text = event.target.value.toLowerCase();
     setSearchText(text);
@@ -80,7 +44,7 @@ const AllPlayers = () => {
     setFilteredPlayers(filtered);
   };
 
-  const handleDeletePlayer = (id) => {
+  const handleDeletePlayer = async (id) => {
     const playerToDelete = players.find((player) => player.id === id);
 
     if (!playerToDelete?.isNew) {
@@ -88,11 +52,21 @@ const AllPlayers = () => {
       return;
     }
 
-    const updatedPlayers = players.filter((player) => player.id !== id);
-    setPlayers(updatedPlayers);
-    setFilteredPlayers(updatedPlayers);
-    localStorage.setItem('players', JSON.stringify(updatedPlayers));
-    alert('Player deleted successfully.');
+    try {
+      await axios.delete(
+        `https://fsa-puppy-bowl.herokuapp.com/api/2408-ftb-et-web-am/players/${id}`
+      );
+
+      const updatedPlayers = players.filter((player) => player.id !== id);
+      setPlayers(updatedPlayers);
+      setFilteredPlayers(updatedPlayers);
+      localStorage.setItem('players', JSON.stringify(updatedPlayers));
+
+      alert('Player deleted successfully.');
+    } catch (error) {
+      console.error(`Failed to delete player with id ${id}:`, error);
+      alert('Failed to delete the player. Please try again.');
+    }
   };
 
   return (

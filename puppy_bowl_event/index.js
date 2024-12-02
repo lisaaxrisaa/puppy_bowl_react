@@ -23,3 +23,16 @@ export const fetchSinglePlayer = async (id) => {
     return null;
   }
 };
+
+export const createPlayer = async (playerData) => {
+  try {
+    const response = await axios.post(
+      'https://fsa-puppy-bowl.herokuapp.com/api/2408-ftb-et-web-am/players',
+      playerData
+    );
+    return response.data.data.newPlayer || null;
+  } catch (error) {
+    console.error('Failed to create player:', error);
+    return null;
+  }
+};
